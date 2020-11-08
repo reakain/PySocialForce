@@ -92,6 +92,7 @@ class Simulator:
 
     def step_once(self):
         """step once"""
+        self.env.step(self.peds)
         self.peds.step(self.compute_forces())
 
     def step(self, n=1):

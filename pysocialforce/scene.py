@@ -149,3 +149,6 @@ class EnvState:
                     )
                 )
                 self._obstacles.append(line)
+    
+    def step(self,peds):
+        """Iterate the obstacle motion"""
