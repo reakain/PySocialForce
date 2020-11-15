@@ -21,7 +21,7 @@ if __name__ == "__main__":
     groups = [[1, 0], [2]]
     # list of linear obstacles given in the form of (x_min, x_max, y_min, y_max)
     # obs = [[-1, -1, -1, 11], [3, 3, -1, 11]]
-    obs = [[1, 2, 7, 8]]
+    obs = [[-2, -1, 7, 8]]
     # obs = None
     # initiate the simulator,
     s = psf.Simulator(
@@ -30,10 +30,11 @@ if __name__ == "__main__":
         obstacles=obs,
         config_file=Path(__file__).resolve().parent.joinpath("example.toml"),
     )
-    s.step_once()
+    #s.step_once()
     # update 80 steps
     for i in range(50):
-        obs = [[1+i, 2+i, 7+i, 8+i]]
+        inc = i*0.2
+        obs = [[-2+inc, -1+inc, 7+inc, 8+inc]]
         s.set_obstacles(obs)
         s.step_once()
 
