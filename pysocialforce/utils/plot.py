@@ -93,9 +93,22 @@ class SceneVisualizer:
         self.human_collection = PatchCollection([])
         self.human_collection.set(animated=True, alpha=0.6, cmap=self.cmap, clip_on=True)
 
+        self.obstacle_actors = None
+        self.obstacle_collection = PatchCollection([])
+        self.obstacle_collection.set(
+            animated=True,
+            alpha=0.2,
+            cmap=self.cmap,
+            facecolors="none",
+            edgecolors="black",
+            linewidth=2,
+            clip_on=True,
+        )
+
     def plot(self):
         """Main method for create plot"""
-        self.plot_obstacles()
+        for s in self.scene.get_obstacles():
+            self.ax.plot(s[:, 0], s[:, 1], "-o", color="black", markersize=2.5)
         groups = self.group_states[0]  # static group for now
         if not groups:
             for ped in range(self.scene.peds.size()):
@@ -216,18 +229,34 @@ class SceneVisualizer:
 
         self.group_collection.set_paths(self.group_actors)
 
-    def plot_obstacles(self):
-        for s in self.scene.get_obstacles():
-            self.ax.plot(s[:, 0], s[:, 1], "-o", color="black", markersize=2.5)
+    def plot_obstacles(self, step=-1):
+        states = self.scene.get_obstacle_states()
+        current_state = states[step]
+        if self.obstacle_actors:
+            i = 0
+            for x1, x2, y1, y2 in current_state:
+                self.obstacle_actors[i].set_xy([[x1,y1],[x2,y2]])
+                i += 1
+        else:
+            self.obstacle_actors = []
+            for x1, x2, y1, y2 in current_state:
+                self.obstacle_actors.append(Polygon([[x1,y1],[x2,y2]]))
+            #self.obstacle_actors = [Polygon(s) for s in current_state]
+        self.obstacle_collection.set_paths(self.obstacle_actors)
+        #for s in current_state:
+        #    self.obstacle_collection.set_paths
+        #    self.ax.plot(s[:, 0], s[:, 1], "-o", color="black", markersize=2.5)
 
     def animation_init(self):
-        self.plot_obstacles()
+        #plot_obstacles()
+        self.ax.add_collection(self.obstacle_collection)
         self.ax.add_collection(self.group_collection)
         self.ax.add_collection(self.human_collection)
 
-        return (self.group_collection, self.human_collection)
+        return (self.group_collection, self.human_collection, self.obstacle_collection)
 
     def animation_update(self, i):
         self.plot_groups(i)
         self.plot_human(i)
-        return (self.group_collection, self.human_collection)
+        self.plot_obstacles(i)
+        return (self.group_collection, self.human_collection, self.obstacle_collection)

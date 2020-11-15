@@ -127,7 +127,9 @@ class EnvState:
 
     def __init__(self, obstacles, resolution=10):
         self.resolution = resolution
-        self.obstacles = obstacles
+        self.obstacle_states = []
+        self.update(obstacles)
+        
 
     @property
     def obstacles(self) -> List[np.ndarray]:
@@ -142,6 +144,7 @@ class EnvState:
         else:
             self._obstacles = []
             for startx, endx, starty, endy in obstacles:
+                
                 samples = int(np.linalg.norm((startx - endx, starty - endy)) * self.resolution)
                 line = np.array(
                     list(
@@ -149,6 +152,11 @@ class EnvState:
                     )
                 )
                 self._obstacles.append(line)
+        self.obstacle_states.append(obstacles.copy())
     
-    def step(self,peds):
+    def update(self,obstacles):
         """Iterate the obstacle motion"""
+        self.obstacles = obstacles
+    
+    def get_states(self):
+        return np.stack(self.obstacle_states)

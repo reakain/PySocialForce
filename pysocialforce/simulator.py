@@ -90,9 +90,15 @@ class Simulator:
     def get_obstacles(self):
         return self.env.obstacles
 
+    def get_obstacle_states(self):
+        return self.env.get_states()
+
+    def set_obstacles(self, obstacles):
+        self.env.update(obstacles)
+        self.forces = self.make_forces(self.config)
+
     def step_once(self):
         """step once"""
-        self.env.step(self.peds)
         self.peds.step(self.compute_forces())
 
     def step(self, n=1):
