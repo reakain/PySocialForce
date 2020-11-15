@@ -1,5 +1,7 @@
 from pathlib import Path
 import numpy as np
+import sys
+sys.path.append("..")
 import pysocialforce as psf
 
 
@@ -28,9 +30,13 @@ if __name__ == "__main__":
         obstacles=obs,
         config_file=Path(__file__).resolve().parent.joinpath("example.toml"),
     )
+    s.step_once()
     # update 80 steps
-    s.step(50)
+    for i in range(50):
+        obs = [[1+i, 2+i, 7+i, 8+i]]
+        s.set_obstacles(obs)
+        s.step_once()
 
-    with psf.plot.SceneVisualizer(s, "images/exmaple") as sv:
+    with psf.plot.SceneVisualizer(s, "../images/exmaple") as sv:
         sv.animate()
         # sv.plot()
