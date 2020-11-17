@@ -46,6 +46,9 @@ class Simulator:
         # initiate obstacles
         self.env = EnvState(obstacles, self.config("resolution", 10.0))
 
+        # store obstacles
+        self.obstacles = obstacles
+
         # initiate agents
         self.peds = PedState(state, groups, self.config)
 
@@ -97,8 +100,12 @@ class Simulator:
         self.env.update(obstacles)
         self.forces = self.make_forces(self.config)
 
-    def step_once(self):
+    def step_once(self, obstacles = None):
         """step once"""
+        if obstacles == None:
+            self.set_obstacles(self.obstacles)
+        else:
+            self.set_obstacles(obstacles)
         self.peds.step(self.compute_forces())
 
     def step(self, n=1):
