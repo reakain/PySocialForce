@@ -20,6 +20,7 @@ class PedState:
 
         self.ped_states = []
         self.group_states = []
+        self.met_point = []
 
         self.update(state, groups)
 

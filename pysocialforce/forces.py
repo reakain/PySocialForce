@@ -238,7 +238,21 @@ class DesiredForce(Force):
         pos = self.peds.pos()
         vel = self.peds.vel()
         goal = self.peds.goal()
-        direction, dist = stateutils.normalize(goal - pos)
+
+        goal0 = np.zeros((len(self.peds.pos()), 2))
+        first_vectors = goal0 - pos
+        direction, dist = stateutils.normalize(first_vectors)
+
+        destination_vectors = goal - pos
+        directions_i, dist_i = stateutils.normalize(destination_vectors)
+        for i, entry in enumerate(direction):
+            if dist[i] < 6 or i in self.peds.met_point:
+                direction[i] = directions_i[i]
+                dist[i] = dist_i[i]
+                if i not in self.peds.met_point:
+                    self.peds.met_point.append(i)
+
+        # direction, dist = stateutils.normalize(goal - pos)
         force = np.zeros((self.peds.size(), 2))
         force[dist > goal_threshold] = (
             direction * self.peds.max_speeds.reshape((-1, 1)) - vel.reshape((-1, 2))
